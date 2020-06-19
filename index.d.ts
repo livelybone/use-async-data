@@ -25,7 +25,7 @@ declare function useAsyncData<
 >(
   api: (...args: Args) => Promise<ApiRes>,
   initialValue: T,
-  dealFn?: (result: ApiRes) => T,
+  dealFn: (result: ApiRes) => T,
 ): DataObject<T, Args>
 
 export default useAsyncData

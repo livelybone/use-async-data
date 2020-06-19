@@ -6,7 +6,7 @@ export interface DataObject<T extends any, Args extends any[]> {
    * A wrapped function for fetch data
    * It realized auto-updating of `data` and auto-updating of `isFetching`
    * */
-  getData: (...args: Args) => Promise<T>
+  getData(...args: Args): Promise<T>
   isFetching: boolean
   /**
    * Be used to update data manually

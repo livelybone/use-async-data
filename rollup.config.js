@@ -13,8 +13,16 @@ const conf = entry => ({
     file: `./lib/${format}/${entry.name}.js`,
     format,
     name: entry.name === 'index' ? 'useAsyncData' : `${entry.name}useAsyncData`,
+    globals: {
+      react: 'React',
+      'react-dom': 'ReactDOM',
+    },
   })),
-  external: entry.external ? Object.keys(packageConf.dependencies || {}) : [],
+  external: [
+    ...(entry.external ? Object.keys(packageConf.dependencies || {}) : []),
+    'react',
+    'react-dom',
+  ],
   plugins: [
     ...baseConf.plugins,
     entry.needUglify !== false && uglify(),

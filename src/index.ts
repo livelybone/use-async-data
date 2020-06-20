@@ -19,7 +19,7 @@ export type ShouldResetData = boolean | void
 function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
   initialValue: T,
-  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
+  errorCb: <E extends any = Error>(err: E) => ShouldResetData,
 ): DataObject<T, Args>
 
 function useAsyncData<
@@ -29,7 +29,7 @@ function useAsyncData<
 >(
   api: (...args: Args) => Promise<ApiRes>,
   initialValue: T,
-  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
+  errorCb: <E extends any = Error>(err: E) => ShouldResetData,
   dealFn: (result: ApiRes) => T,
 ): DataObject<T, Args>
 
@@ -40,7 +40,7 @@ function useAsyncData<
 >(
   api: (...args: Args) => Promise<ApiRes>,
   initialValue: T,
-  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
+  errorCb: <E extends any = Error>(err: E) => ShouldResetData,
   dealFn?: (result: ApiRes) => T,
 ) {
   const [data, setData] = useState<T>(initialValue)

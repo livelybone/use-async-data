@@ -21,7 +21,7 @@ declare type ShouldResetData = boolean | void
 declare function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
   initialValue: T,
-  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
+  errorCb: <E extends any = Error>(err: E) => ShouldResetData,
 ): DataObject<T, Args>
 declare function useAsyncData<
   T extends any,
@@ -30,7 +30,7 @@ declare function useAsyncData<
 >(
   api: (...args: Args) => Promise<ApiRes>,
   initialValue: T,
-  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
+  errorCb: <E extends any = Error>(err: E) => ShouldResetData,
   dealFn: (result: ApiRes) => T,
 ): DataObject<T, Args>
 

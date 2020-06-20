@@ -14,9 +14,12 @@ export interface DataObject<T extends any, Args extends any[]> {
   setData: Dispatch<SetStateAction<T>>
 }
 
+export type ShouldResetData = boolean | void
+
 function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
   initialValue: T,
+  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
 ): DataObject<T, Args>
 
 function useAsyncData<
@@ -26,6 +29,7 @@ function useAsyncData<
 >(
   api: (...args: Args) => Promise<ApiRes>,
   initialValue: T,
+  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
   dealFn: (result: ApiRes) => T,
 ): DataObject<T, Args>
 
@@ -36,6 +40,7 @@ function useAsyncData<
 >(
   api: (...args: Args) => Promise<ApiRes>,
   initialValue: T,
+  errorCb: <E extends any = Error>(err: T) => ShouldResetData,
   dealFn?: (result: ApiRes) => T,
 ) {
   const [data, setData] = useState<T>(initialValue)
@@ -55,6 +60,12 @@ function useAsyncData<
         setIsFetching(false)
         setData(res)
         return res
+      })
+      .catch(e => {
+        const shouldResetData = errorCb(e)
+        if (!shouldResetData) return data
+        setData(initialValue)
+        return initialValue
       }) as Promise<T>
   }, [])
 

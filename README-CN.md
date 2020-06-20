@@ -47,7 +47,11 @@ function getAsyncData(arg1: any, arg2: any): Promise<any> {
 
 const App = () => {
   // `setData` is used to update data manually
-  const { data, getData, isFetching, setData } = useAsyncData(getAsyncData, {})
+  const { data, getData, isFetching, setData } = useAsyncData(
+    getAsyncData,
+    {},
+    console.error,
+  )
 
   return (
     <article>

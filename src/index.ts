@@ -62,6 +62,7 @@ function useAsyncData<
         return res
       })
       .catch(e => {
+        setIsFetching(false)
         return Promise.resolve(errorCb(e)).then(shouldResetData => {
           if (!shouldResetData) return data
           setData(initialValue)

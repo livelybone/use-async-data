@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react'
+import useMounted from '@livelybone/use-mounted'
 
 export type DataTuple<T extends any, Args extends any[]> = [
   /**
@@ -55,6 +56,7 @@ function useAsyncData<
 ) {
   const [data, setData] = useState<T>(initialValue)
   const [isFetching, setIsFetching] = useState(false)
+  const mountInfo = useMounted()
 
   const callbacks = useRef({ api, dealFn })
   callbacks.current.api = api
@@ -67,15 +69,21 @@ function useAsyncData<
     return $api(...args)
       .then(res => ($dealFn ? $dealFn(res) : (res as any)))
       .then(res => {
-        setIsFetching(false)
-        setData(res)
+        if (!mountInfo.current.unmounted) {
+          setIsFetching(false)
+          setData(res)
+        }
         return res
       })
       .catch(e => {
-        setIsFetching(false)
+        if (!mountInfo.current.unmounted) {
+          setIsFetching(false)
+        }
         return Promise.resolve(errorCb(e)).then(shouldResetData => {
           if (!shouldResetData) return data
-          setData(initialValue)
+          if (!mountInfo.current.unmounted) {
+            setData(initialValue)
+          }
           return initialValue
         })
       }) as Promise<T>

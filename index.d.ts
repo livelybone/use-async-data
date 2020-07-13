@@ -1,28 +1,32 @@
 import { Dispatch, SetStateAction } from 'react'
 
-interface DataObject<T extends any, Args extends any[]> {
-  data: T
-
+declare type DataTuple<T extends any, Args extends any[]> = [
+  /**
+   * Data
+   * */
+  T,
   /**
    * A wrapped function for fetch data
    * It realized auto-updating of `data` and auto-updating of `isFetching`
    * */
-  getData(...args: Args): Promise<T>
-
-  isFetching: boolean
+  (...args: Args) => Promise<T>,
+  /**
+   * Is fetching
+   * */
+  boolean,
   /**
    * Be used to update data manually
    * */
-  setData: Dispatch<SetStateAction<T>>
-}
-
-declare type ShouldResetData = Promise<boolean | void> | boolean | void
+  Dispatch<SetStateAction<T>>,
+]
+declare type TruthyOrFalsy = any
+declare type ShouldResetData = Promise<TruthyOrFalsy> | TruthyOrFalsy
 
 declare function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
   initialValue: T,
   errorCb: (err: any) => ShouldResetData,
-): DataObject<T, Args>
+): DataTuple<T, Args>
 declare function useAsyncData<
   T extends any,
   ApiRes extends any,
@@ -32,7 +36,7 @@ declare function useAsyncData<
   initialValue: T,
   errorCb: (err: any) => ShouldResetData,
   dealFn: (result: ApiRes) => T,
-): DataObject<T, Args>
+): DataTuple<T, Args>
 
 export default useAsyncData
-export { DataObject, ShouldResetData }
+export { DataTuple, ShouldResetData, TruthyOrFalsy }

@@ -1,26 +1,36 @@
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react'
 
-export interface DataObject<T extends any, Args extends any[]> {
-  data: T
+export type DataTuple<T extends any, Args extends any[]> = [
+  /**
+   * Data
+   * */
+  T,
+
   /**
    * A wrapped function for fetch data
    * It realized auto-updating of `data` and auto-updating of `isFetching`
    * */
-  getData(...args: Args): Promise<T>
-  isFetching: boolean
+  (...args: Args) => Promise<T>,
+
+  /**
+   * Is fetching
+   * */
+  boolean,
+
   /**
    * Be used to update data manually
    * */
-  setData: Dispatch<SetStateAction<T>>
-}
+  Dispatch<SetStateAction<T>>,
+]
 
-export type ShouldResetData = Promise<boolean | void> | boolean | void
+export type TruthyOrFalsy = any
+export type ShouldResetData = Promise<TruthyOrFalsy> | TruthyOrFalsy
 
 function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
   initialValue: T,
   errorCb: (err: any) => ShouldResetData,
-): DataObject<T, Args>
+): DataTuple<T, Args>
 
 function useAsyncData<
   T extends any,
@@ -31,7 +41,7 @@ function useAsyncData<
   initialValue: T,
   errorCb: (err: any) => ShouldResetData,
   dealFn: (result: ApiRes) => T,
-): DataObject<T, Args>
+): DataTuple<T, Args>
 
 function useAsyncData<
   T extends any,
@@ -71,7 +81,7 @@ function useAsyncData<
       }) as Promise<T>
   }, [])
 
-  return { data, getData, isFetching, setData }
+  return [data, getData, isFetching, setData]
 }
 
 export default useAsyncData

@@ -1,6 +1,6 @@
 {
   "name": "@livelybone/use-async-data",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A react hook for deal data that generated asynchronously",
   "main": "./lib/umd/index.js",
   "module": "./lib/es/index.js",

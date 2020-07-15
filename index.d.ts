@@ -24,7 +24,7 @@ declare type ShouldResetData = Promise<TruthyOrFalsy> | TruthyOrFalsy
 
 declare function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
-  initialValue: T,
+  initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
 ): DataTuple<T, Args>
 declare function useAsyncData<
@@ -33,9 +33,9 @@ declare function useAsyncData<
   Args extends any[] = []
 >(
   api: (...args: Args) => Promise<ApiRes>,
-  initialValue: T,
+  initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
-  dealFn: (result: ApiRes) => T,
+  dealFn: (result: ApiRes, preData: T) => T,
 ): DataTuple<T, Args>
 
 export default useAsyncData

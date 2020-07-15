@@ -29,7 +29,7 @@ export type ShouldResetData = Promise<TruthyOrFalsy> | TruthyOrFalsy
 
 function useAsyncData<T extends any, Args extends any[] = []>(
   api: (...args: Args) => Promise<T>,
-  initialValue: T,
+  initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
 ): DataTuple<T, Args>
 
@@ -39,9 +39,9 @@ function useAsyncData<
   Args extends any[] = []
 >(
   api: (...args: Args) => Promise<ApiRes>,
-  initialValue: T,
+  initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
-  dealFn: (result: ApiRes) => T,
+  dealFn: (result: ApiRes, preData: T) => T,
 ): DataTuple<T, Args>
 
 function useAsyncData<
@@ -50,17 +50,18 @@ function useAsyncData<
   Args extends any[] = []
 >(
   api: (...args: Args) => Promise<ApiRes>,
-  initialValue: T,
+  initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
-  dealFn?: (result: ApiRes) => T,
+  dealFn?: (result: ApiRes, preData: T) => T,
 ) {
-  const [data, setData] = useState<T>(initialValue)
+  const [data, setData] = useState(initialValue)
   const [isFetching, setIsFetching] = useState(false)
   const mountInfo = useMounted()
 
-  const callbacks = useRef({ api, dealFn })
+  type Ref = { api: typeof api; dealFn?: (res: ApiRes) => T }
+  const callbacks = useRef<Ref>({ api })
   callbacks.current.api = api
-  callbacks.current.dealFn = dealFn
+  callbacks.current.dealFn = dealFn && ((res: ApiRes) => dealFn(res, data))
 
   const getData = useCallback((...args: Args) => {
     const { api: $api, dealFn: $dealFn } = callbacks.current
@@ -84,7 +85,9 @@ function useAsyncData<
           if (!mountInfo.current.unmounted) {
             setData(initialValue)
           }
-          return initialValue
+          return typeof initialValue === 'function'
+            ? (initialValue as () => T)()
+            : initialValue
         })
       }) as Promise<T>
   }, [])

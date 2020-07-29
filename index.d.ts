@@ -20,10 +20,10 @@ declare type DataTuple<T extends any, Args extends any[]> = [
   Dispatch<SetStateAction<T>>,
 ]
 declare type TruthyOrFalsy = any
-declare type ShouldResetData = Promise<TruthyOrFalsy> | TruthyOrFalsy
+declare type ShouldResetData = PromiseLike<TruthyOrFalsy> | TruthyOrFalsy
 
 declare function useAsyncData<T extends any, Args extends any[] = []>(
-  api: (...args: Args) => Promise<T>,
+  api: (...args: Args) => PromiseLike<T>,
   initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
 ): DataTuple<T, Args>
@@ -32,7 +32,7 @@ declare function useAsyncData<
   ApiRes extends any,
   Args extends any[] = []
 >(
-  api: (...args: Args) => Promise<ApiRes>,
+  api: (...args: Args) => PromiseLike<ApiRes>,
   initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
   dealFn: (result: ApiRes, preData: T) => T,

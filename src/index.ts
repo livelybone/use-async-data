@@ -25,10 +25,10 @@ export type DataTuple<T extends any, Args extends any[]> = [
 ]
 
 export type TruthyOrFalsy = any
-export type ShouldResetData = Promise<TruthyOrFalsy> | TruthyOrFalsy
+export type ShouldResetData = PromiseLike<TruthyOrFalsy> | TruthyOrFalsy
 
 function useAsyncData<T extends any, Args extends any[] = []>(
-  api: (...args: Args) => Promise<T>,
+  api: (...args: Args) => PromiseLike<T>,
   initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
 ): DataTuple<T, Args>
@@ -38,7 +38,7 @@ function useAsyncData<
   ApiRes extends any,
   Args extends any[] = []
 >(
-  api: (...args: Args) => Promise<ApiRes>,
+  api: (...args: Args) => PromiseLike<ApiRes>,
   initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
   dealFn: (result: ApiRes, preData: T) => T,
@@ -49,7 +49,7 @@ function useAsyncData<
   ApiRes extends any,
   Args extends any[] = []
 >(
-  api: (...args: Args) => Promise<ApiRes>,
+  api: (...args: Args) => PromiseLike<ApiRes>,
   initialValue: T | (() => T),
   errorCb: (err: any) => ShouldResetData,
   dealFn?: (result: ApiRes, preData: T) => T,
@@ -67,7 +67,7 @@ function useAsyncData<
     const { api: $api, dealFn: $dealFn } = callbacks.current
 
     setIsFetching(true)
-    return $api(...args)
+    return Promise.resolve($api(...args))
       .then(res => ($dealFn ? $dealFn(res) : (res as any)))
       .then(res => {
         if (!mountInfo.current.unmounted) {
